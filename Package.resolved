@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Goose",
+        "repositoryURL": "https://github.com/alloyapple/Goose.git",
+        "state": {
+          "branch": "master",
+          "revision": "0240704c136334a612a59ad104ed27b07f547a96",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
