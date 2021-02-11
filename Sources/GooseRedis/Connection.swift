@@ -27,10 +27,37 @@ public class Connection {
         guard let sock = self.sock else {
             return
         }
+
+        try? self._connect()
     }
 
-    public func _connect() {
-        
+    public func _connect() throws -> Socket {
+        var addrList = try getaddrinfo(
+            host: self.host, port: self.port, family: self.config.socketFamily,
+            type: SockType.tcp)
+
+        defer {
+            freeaddrinfo(addrList)
+        }
+
+        while addrList != nil {
+            do {
+                guard let addr = addrList else { continue }
+                let sock = Socket(
+                    family: SockFamily(fromRawValue: addr.pointee.ai_family),
+                    type: SockType(fromRawValue: addr.pointee.ai_socktype),
+                    proto: SockProt(fromRawValue: addr.pointee.ai_protocol))
+
+                try sock.connect(addr: addr)
+
+                return sock
+            } catch {
+                print("connect error")
+            }
+
+            addrList = addrList?.pointee.ai_next
+        }
+        throw GooseError.error()
     }
 }
 
