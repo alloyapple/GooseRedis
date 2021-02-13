@@ -7,6 +7,10 @@ final class GooseRedisTests: XCTestCase {
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
         XCTAssertEqual(GooseRedis().text, "Hello, World!")
+
+        let str = "\r\n"
+        let buf: [UInt8] = Array("\r\n".utf8)
+        print("a: \(buf)")
     }
 
     static var allTests = [

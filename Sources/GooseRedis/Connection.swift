@@ -10,6 +10,7 @@ public class Connection {
     public let password: String?
     public var sock: Socket?
     public let config: RedisConfig
+    public let parser: Parser = Parser(socketReadSize: 10)
 
     public init(
         host: String = "localhost", port: UInt16 = 6379,
@@ -32,32 +33,28 @@ public class Connection {
     }
 
     public func _connect() throws -> Socket {
-        var addrList = try getaddrinfo(
+        var addrList = try getAddrinfo(
             host: self.host, port: self.port, family: self.config.socketFamily,
             type: SockType.tcp)
 
-        defer {
-            freeaddrinfo(addrList)
-        }
+        for addr in addrList {
+            let sock = Socket(
+                family: addr.pointee.family,
+                type: addr.pointee.type,
+                proto: addr.pointee.prot)
+                sock.options.noDelay = true
+                sock.options.keepAlive = true
 
-        while addrList != nil {
-            do {
-                guard let addr = addrList else { continue }
-                let sock = Socket(
-                    family: SockFamily(fromRawValue: addr.pointee.ai_family),
-                    type: SockType(fromRawValue: addr.pointee.ai_socktype),
-                    proto: SockProt(fromRawValue: addr.pointee.ai_protocol))
+            try sock.connect(addr: addr)
+            // sock.settimeout(self.socket_timeout)
 
-                try sock.connect(addr: addr)
-
-                return sock
-            } catch {
-                print("connect error")
-            }
-
-            addrList = addrList?.pointee.ai_next
+            return sock
         }
         throw GooseError.error()
+    }
+
+    func onConnect() {
+
     }
 }
 
