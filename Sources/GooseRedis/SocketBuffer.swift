@@ -1,7 +1,7 @@
 import Foundation
 import Goose
 
-class SocketBuffer {
+public class SocketBuffer {
     var buffer: Data
     let socket: Socket
     let socketReadSize: Int
@@ -13,13 +13,13 @@ class SocketBuffer {
         self.bytesWritten - self.bytesRead
     }
 
-    init(socket: Socket, socketReadSize: Int) {
+    public init(socket: Socket, socketReadSize: Int) {
         self.buffer = Data()
         self.socket = socket
         self.socketReadSize = socketReadSize
     }
 
-    func readFromSocket(length: Int32?) throws {
+    func readFromSocket(length: Int?) throws {
         var marker = 0
         while true {
             let data = try self.socket.read(self.socketReadSize)
@@ -36,14 +36,26 @@ class SocketBuffer {
 
     func read(length: Int) -> Data {
         let result = self.buffer.prefix(length)
-        self.buffer = self.buffer.dropFirst(length)
+        purge(len: length)
         return result
     }
 
-    func readLine() -> Data {
-        if let data = self.buffer.readLine(), data.endswith(Array("\r\n".utf8)) {
-
+    func readLine() -> [UInt8] {
+        var result = [UInt8]()
+        while true {
+            if let data = self.buffer.readLine(), data.endswith("\r\n".bytes) {
+                result = data
+                break
+            } else {
+                try? self.readFromSocket(length: self.socketReadSize)
+            }
         }
-        return Data()
+
+        purge(len: result.count)
+        return result
+    }
+
+    func purge(len: Int) {
+        self.buffer = self.buffer.dropFirst(len)
     }
 }
