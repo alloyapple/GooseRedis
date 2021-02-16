@@ -44,7 +44,8 @@ public class SocketBuffer {
         var result = [UInt8]()
         while true {
             if let data = self.buffer.readLine(), data.endswith("\r\n".bytes) {
-                result = data
+                let lastIndex = data.count - 2
+                result = Array(data[..<lastIndex])
                 break
             } else {
                 try? self.readFromSocket(length: self.socketReadSize)
