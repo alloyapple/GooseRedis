@@ -20,17 +20,17 @@ public class Connection {
                 type: SockType.tcp)
 
             for addr in addrList {
-                let sock = Socket(
-                    family: addr.pointee.family,
-                    type: addr.pointee.type,
-                    proto: addr.pointee.prot)
-                sock.options.noDelay = true
-                sock.options.keepAlive = true
+                do {
+                    let sock = Socket(
+                        family: addr.pointee.family,
+                        type: addr.pointee.type,
+                        proto: addr.pointee.prot)
+                    sock.options.noDelay = true
+                    sock.options.keepAlive = true
 
-                try sock.connect(addr: addr)
-                // sock.settimeout(self.socket_timeout)
-
-                return sock
+                    try sock.connect(addr: addr)
+                    return sock
+                }
             }
             throw GooseError.error()
         }
@@ -47,7 +47,6 @@ public class Connection {
         db: UInt8 = 0, password: String? = nil, config: RedisConfig = defaultConfig
     ) throws {
 
-        
         self.pid = getpid()
         self.sock = Socket()
         try self.sock.connect(path: unixpath)
