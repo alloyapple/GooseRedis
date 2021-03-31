@@ -8,7 +8,7 @@ public class Connection {
     public let port: UInt16
     public let db: UInt8
     public let password: String?
-    public var sock: Socket?
+    public var sock: Socket
     public let config: RedisConfig
     public let parser: Parser = Parser(socketReadSize: 10)
 
@@ -42,8 +42,8 @@ public class Connection {
                 family: addr.pointee.family,
                 type: addr.pointee.type,
                 proto: addr.pointee.prot)
-                sock.options.noDelay = true
-                sock.options.keepAlive = true
+            sock.options.noDelay = true
+            sock.options.keepAlive = true
 
             try sock.connect(addr: addr)
             // sock.settimeout(self.socket_timeout)
@@ -55,6 +55,50 @@ public class Connection {
 
     func onConnect() {
 
+    }
+
+    func packCommand(args: Bytes...) {
+
+    }
+
+    func packCommand(name: String, args: [RedisData]) -> Bytes {
+
+        let nameArray = name.components(separatedBy: " ")
+        var newArgs: [RedisData] = []
+        if nameArray.count > 1 {
+            newArgs = nameArray + args
+        } else {
+            newArgs = [name] + args
+        }
+        
+        var buffer = "*\(newArgs.count)\r\n"
+
+        for arg in newArgs {
+            let argLength = arg.len
+            buffer += "$\(argLength)\r\n\(arg)\r\n"
+        }
+
+        return Array(buffer.utf8)
+    }
+
+    func sendPackedCommand(bytes: Bytes, checkHealth: Bool) {
+        if checkHealth {
+
+        }
+
+        do {
+            try self.sock.sendall(bytes)
+        } catch let error {
+            
+        }
+
+        
+    }
+
+    func sendCommand(name: String, args: [RedisData]) {
+        self.sendPackedCommand(
+            bytes: self.packCommand(name: name, args: args),
+            checkHealth: true)
     }
 }
 
