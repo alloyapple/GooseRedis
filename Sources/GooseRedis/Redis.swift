@@ -31,7 +31,6 @@ public class Redis {
     }
 
     public func executeCommand(name: String, args: [RedisData]) {
-        let commandName = args[0]
         connection.sendCommand(name: name, args: args)
         //return self.parseResponse(commandName)
     }

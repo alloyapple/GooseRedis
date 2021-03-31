@@ -4,8 +4,6 @@ import Goose
 
 public class Connection {
     public let pid: Int32
-    public let host: String
-    public let port: UInt16
     public let db: UInt8
     public let password: String?
     public var sock: Socket
@@ -16,9 +14,29 @@ public class Connection {
         host: String = "localhost", port: UInt16 = 6379,
         db: UInt8 = 0, password: String? = nil, config: RedisConfig = defaultConfig
     ) throws {
+        func _connect() throws -> Socket {
+            let addrList = try getAddrinfo(
+                host: host, port: port, family: config.socketFamily,
+                type: SockType.tcp)
+
+            for addr in addrList {
+                let sock = Socket(
+                    family: addr.pointee.family,
+                    type: addr.pointee.type,
+                    proto: addr.pointee.prot)
+                sock.options.noDelay = true
+                sock.options.keepAlive = true
+
+                try sock.connect(addr: addr)
+                // sock.settimeout(self.socket_timeout)
+
+                return sock
+            }
+            throw GooseError.error()
+        }
+
         self.pid = getpid()
-        self.sock = Socket()
-        try self.sock.connect(hostname: host, port: port)
+        self.sock = try _connect()
         self.db = db
         self.password = password
         self.config = config
@@ -28,41 +46,14 @@ public class Connection {
         unixpath: String = "localhost",
         db: UInt8 = 0, password: String? = nil, config: RedisConfig = defaultConfig
     ) throws {
+
+        
         self.pid = getpid()
         self.sock = Socket()
         try self.sock.connect(path: unixpath)
         self.db = db
         self.password = password
         self.config = config
-    }
-
-    public func connect() {
-        guard let sock = self.sock else {
-            return
-        }
-
-        try? self._connect()
-    }
-
-    public func _connect() throws -> Socket {
-        var addrList = try getAddrinfo(
-            host: self.host, port: self.port, family: self.config.socketFamily,
-            type: SockType.tcp)
-
-        for addr in addrList {
-            let sock = Socket(
-                family: addr.pointee.family,
-                type: addr.pointee.type,
-                proto: addr.pointee.prot)
-            sock.options.noDelay = true
-            sock.options.keepAlive = true
-
-            try sock.connect(addr: addr)
-            // sock.settimeout(self.socket_timeout)
-
-            return sock
-        }
-        throw GooseError.error()
     }
 
     func onConnect() {
