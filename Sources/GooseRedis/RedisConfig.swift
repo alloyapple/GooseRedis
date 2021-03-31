@@ -8,7 +8,6 @@ public struct RedisConfig {
     let socketKeepaliveOptions: Int32 = 0
     let socketFamily: SockFamily = SockFamily.inet
     let connectionPool: Int32 = 0
-    let unixSocketPath: Int32 = 0
     let encoding: String = "utf-8"
     let encodingErrors: String = "strict"
     let decodeResponses: Int32 = 0

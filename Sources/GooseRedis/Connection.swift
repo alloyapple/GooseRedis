@@ -10,15 +10,27 @@ public class Connection {
     public let password: String?
     public var sock: Socket
     public let config: RedisConfig
-    public let parser: Parser = Parser(socketReadSize: 10)
+    //public let parser: Parser = Parser(socketReadSize: 10)
 
     public init(
         host: String = "localhost", port: UInt16 = 6379,
         db: UInt8 = 0, password: String? = nil, config: RedisConfig = defaultConfig
-    ) {
+    ) throws {
         self.pid = getpid()
-        self.host = host
-        self.port = port
+        self.sock = Socket()
+        try self.sock.connect(hostname: host, port: port)
+        self.db = db
+        self.password = password
+        self.config = config
+    }
+
+    public init(
+        unixpath: String = "localhost",
+        db: UInt8 = 0, password: String? = nil, config: RedisConfig = defaultConfig
+    ) throws {
+        self.pid = getpid()
+        self.sock = Socket()
+        try self.sock.connect(path: unixpath)
         self.db = db
         self.password = password
         self.config = config
@@ -70,7 +82,7 @@ public class Connection {
         } else {
             newArgs = [name] + args
         }
-        
+
         var buffer = "*\(newArgs.count)\r\n"
 
         for arg in newArgs {
@@ -83,16 +95,15 @@ public class Connection {
 
     func sendPackedCommand(bytes: Bytes, checkHealth: Bool) {
         if checkHealth {
-
+            //  self.checkHealth()
         }
 
         do {
             try self.sock.sendall(bytes)
         } catch let error {
-            
+
         }
 
-        
     }
 
     func sendCommand(name: String, args: [RedisData]) {

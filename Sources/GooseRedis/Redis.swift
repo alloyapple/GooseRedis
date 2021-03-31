@@ -7,8 +7,15 @@ public class Redis {
     public init(
         host: String = "localhost", port: UInt16 = 6379,
         db: UInt8 = 0, password: String? = nil, config: RedisConfig = defaultConfig
-    ) {
+    ) throws {
+        self.connection = try Connection(host: host, port: port, db: db, password: password, config: config)
+    }
 
+    public init(
+        unixpath: String = "localhost",
+        db: UInt8 = 0, password: String? = nil, config: RedisConfig = defaultConfig
+    ) throws {
+        self.connection = try Connection(unixpath: unixpath, db: db, password: password, config: config)
     }
 
     public func get<T>(name: String) -> T? {
@@ -20,7 +27,7 @@ public class Redis {
         keepttl: Bool = false
     ) {
         let pieces: [RedisData] = [name, value]
-        self.executeCommand(name:"SET", args: pieces)
+        self.executeCommand(name: "SET", args: pieces)
     }
 
     public func executeCommand(name: String, args: [RedisData]) {
