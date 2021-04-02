@@ -19,7 +19,7 @@ public class Redis {
     }
 
     public func get<T>(name: String, default: T) -> T {
-        return `default`
+        return get(name: name) ?? `default`
     }
 
     public func get<T>(name: String) -> T? {
