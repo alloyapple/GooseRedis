@@ -18,6 +18,10 @@ public class Redis {
         self.connection = try Connection(unixpath: unixpath, db: db, password: password, config: config)
     }
 
+    public func get<T>(name: String, default: T) -> T {
+        return `default`
+    }
+
     public func get<T>(name: String) -> T? {
         return nil
     }
