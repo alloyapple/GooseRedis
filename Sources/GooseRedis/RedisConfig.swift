@@ -20,6 +20,7 @@ public struct RedisConfig {
     let sslCheckHostname: Int32 = 0
     let maxConnections: Int32 = 0
     let singleConnectionClient: Int32 = 0
+    let socketReadSize: Int = 65535
     let healthCheckInterval: Int32 = 0
     let clientName: String = ""
     let username: String = ""
