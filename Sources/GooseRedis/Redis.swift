@@ -8,22 +8,24 @@ public class Redis {
         host: String = "localhost", port: UInt16 = 6379,
         db: UInt8 = 0, password: String? = nil, config: RedisConfig = defaultConfig
     ) throws {
-        self.connection = try Connection(host: host, port: port, db: db, password: password, config: config)
+        self.connection = try Connection(
+            host: host, port: port, db: db, password: password, config: config)
     }
 
     public init(
         unixpath: String = "localhost",
         db: UInt8 = 0, password: String? = nil, config: RedisConfig = defaultConfig
     ) throws {
-        self.connection = try Connection(unixpath: unixpath, db: db, password: password, config: config)
+        self.connection = try Connection(
+            unixpath: unixpath, db: db, password: password, config: config)
     }
 
-    public func get<T>(name: String, default: T) -> T {
+    public func get<T: RedisData>(name: String, default: T) -> T {
         return get(name: name) ?? `default`
     }
 
-    public func get<T>(name: String) -> T? {
-        return nil
+    public func get<T: RedisData>(name: String) -> T? {
+        return T.fromBytes(self.executeCommand(name: "GET", args: []))
     }
 
     public func set<T: RedisData>(
@@ -34,9 +36,19 @@ public class Redis {
         self.executeCommand(name: "SET", args: pieces)
     }
 
-    public func executeCommand(name: String, args: [RedisData]) {
+    func parseResponse(name: String) -> Bytes {
+        let response = connection.readResponse()
+
+        // if command_name in self.response_callbacks:
+        //     return self.response_callbacks[command_name](response, **options)
+
+        return response
+    }
+
+    @discardableResult
+    public func executeCommand(name: String, args: [RedisData]) -> Bytes {
         connection.sendCommand(name: name, args: args)
-        //return self.parseResponse(commandName)
+        return self.parseResponse(name: name)
     }
 }
 
@@ -49,10 +61,15 @@ public class Pipeline: Redis {
 }
 
 public protocol RedisData {
+    static func fromBytes(_ bytes: Bytes) -> Self?
     var len: Int { get }
 }
 
 extension Int: RedisData {
+    public static func fromBytes(_ bytes: Bytes) -> Self? {
+        return nil
+    }
+
     public var len: Int {
         let v = "\(self)"
         return v.count
@@ -60,6 +77,9 @@ extension Int: RedisData {
 }
 
 extension String: RedisData {
+    public static func fromBytes(_ bytes: Bytes) -> Self? {
+        return nil
+    }
     public var len: Int {
         return self.utf8.count
     }

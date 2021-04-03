@@ -8,7 +8,7 @@ public class Connection {
     public let password: String?
     public var sock: Socket
     public let config: RedisConfig
-    //public let parser: Parser = Parser(socketReadSize: 10)
+    public let parser: Parser
 
     public init(
         host: String = "localhost", port: UInt16 = 6379,
@@ -37,6 +37,7 @@ public class Connection {
 
         self.pid = getpid()
         self.sock = try _connect()
+        self.parser = Parser(socketReadSize: Int32, sock: self.sock, buffer: SocketBuffer)
         self.db = db
         self.password = password
         self.config = config
@@ -81,6 +82,11 @@ public class Connection {
         }
 
         return Array(buffer.utf8)
+    }
+
+    func readResponse() -> Bytes {
+        let raw = self.buffer.readLine()
+
     }
 
     func sendPackedCommand(bytes: Bytes, checkHealth: Bool) {
