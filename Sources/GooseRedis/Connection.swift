@@ -37,7 +37,7 @@ public class Connection {
 
         self.pid = getpid()
         self.sock = try _connect()
-        self.parser = Parser(socketReadSize: config.socketReadSize, sock: self.sock, buffer: SocketBuffer)
+        self.parser = Parser(socketReadSize: config.socketReadSize, sock: self.sock)
         self.db = db
         self.password = password
         self.config = config

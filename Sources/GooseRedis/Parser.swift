@@ -17,6 +17,9 @@ public class Parser {
 
     func readResponse() {
         let raw = self.buffer.readLine()
+        let byte = raw[0]
+        let response = Array(raw[1...])
+        
 
     }
 }
