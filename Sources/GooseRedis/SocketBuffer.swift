@@ -52,7 +52,7 @@ public class SocketBuffer {
             }
         }
 
-        purge(len: result.count)
+        purge(len: result.count + 2)
         return result
     }
 

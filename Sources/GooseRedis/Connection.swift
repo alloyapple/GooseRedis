@@ -57,14 +57,6 @@ public class Connection {
         self.config = config
     }
 
-    func onConnect() {
-
-    }
-
-    func packCommand(args: Bytes...) {
-
-    }
-
     func packCommand(name: String, args: [RedisData]) -> Bytes {
 
         let nameArray = name.components(separatedBy: " ")

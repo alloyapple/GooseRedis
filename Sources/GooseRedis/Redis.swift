@@ -26,7 +26,7 @@ public class Redis {
     }
 
     public func get<T: RedisData>(name: String) -> T? {
-        return T.fromBytes(self.executeCommand(name: "GET", args: []))
+        return T.fromBytes(self.executeCommand(name: "GET", args: [name]))
     }
 
     public func set<T: RedisData>(
@@ -63,13 +63,14 @@ public class Pipeline: Redis {
 }
 
 public protocol RedisData {
-    static func fromBytes(_ bytes: Bytes) -> Self?
+    static func fromBytes(_ bytes: Bytes) -> Self
     var len: Int { get }
 }
 
 extension Int: RedisData {
-    public static func fromBytes(_ bytes: Bytes) -> Self? {
-        return nil
+    public static func fromBytes(_ bytes: Bytes) -> Self {
+        let intString = String(decoding: bytes, as: UTF8.self)
+        return Int(intString) ?? 0
     }
 
     public var len: Int {
@@ -79,8 +80,8 @@ extension Int: RedisData {
 }
 
 extension String: RedisData {
-    public static func fromBytes(_ bytes: Bytes) -> Self? {
-        return nil
+    public static func fromBytes(_ bytes: Bytes) -> Self {
+        return String(decoding: bytes, as: UTF8.self)
     }
     public var len: Int {
         return self.utf8.count
