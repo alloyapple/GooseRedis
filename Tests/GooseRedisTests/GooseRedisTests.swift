@@ -16,7 +16,8 @@ final class GooseRedisTests: XCTestCase {
     func testSet() {
         do {
             let redis = try Redis(host: "localhost", port: 8379)
-            redis.set(name: "goose", value: 20)
+            let r = redis.set(name: "goose", value: 20)
+            print("\(r)")
         } catch {
 
         }

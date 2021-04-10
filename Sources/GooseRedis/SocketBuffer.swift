@@ -48,7 +48,7 @@ public class SocketBuffer {
                 result = Array(data[..<lastIndex])
                 break
             } else {
-                try? self.readFromSocket(length: self.socketReadSize)
+                try? self.readFromSocket(length: nil)
             }
         }
 

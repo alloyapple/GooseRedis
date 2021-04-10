@@ -32,9 +32,10 @@ public class Redis {
     public func set<T: RedisData>(
         name: String, value: T, ex: Int? = nil, px: Int? = nil, nx: Bool = false, xx: Bool = false,
         keepttl: Bool = false
-    ) {
+    ) -> String {
         let pieces: [RedisData] = [name, value]
-        self.executeCommand(name: "SET", args: pieces)
+        let ret = self.executeCommand(name: "SET", args: pieces)
+        return String(decoding: ret, as: UTF8.self)
     }
 
     func parseResponse(name: String) -> Bytes {
