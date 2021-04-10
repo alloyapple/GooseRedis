@@ -13,7 +13,17 @@ final class GooseRedisTests: XCTestCase {
         print("a: \(buf)")
     }
 
+    func testSet() {
+        do {
+            let redis = try Redis(host: "localhost", port: 8379)
+            redis.set(name: "goose", value: 20)
+        } catch {
+
+        }
+    }
+
     static var allTests = [
         ("testExample", testExample),
+        ("testSet", testSet),
     ]
 }
