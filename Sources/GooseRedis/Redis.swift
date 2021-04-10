@@ -29,6 +29,33 @@ public class Redis {
         return T.fromBytes(self.executeCommand(name: "GET", args: [name]))
     }
 
+    public func expireat(name: String, when: Int) -> String {
+        let ret = self.executeCommand(name: "EXPIREAT", args: [name, when])
+        return String(decoding: ret, as: UTF8.self) 
+    }
+
+    public func expire(name: String, when: Int) -> String {
+        let ret = self.executeCommand(name: "EXPIRE", args: [name, when])
+        return String(decoding: ret, as: UTF8.self) 
+    }
+
+    public func exists(names: [String]) -> String {
+        let ret = self.executeCommand(name: "EXISTS", args: names)
+        return String(decoding: ret, as: UTF8.self) 
+    }
+
+    public func dump(name: String) -> String {
+        let ret = self.executeCommand(name: "DUMP", args: [name])
+        return String(decoding: ret, as: UTF8.self) 
+    }
+
+    public func delete(names: [String]) -> String {
+        let ret = self.executeCommand(name: "DEL", args: names)
+        return String(decoding: ret, as: UTF8.self) 
+    }
+
+    
+
     public func set<T: RedisData>(
         name: String, value: T, ex: Int? = nil, px: Int? = nil, nx: Bool = false, xx: Bool = false,
         keepttl: Bool = false
