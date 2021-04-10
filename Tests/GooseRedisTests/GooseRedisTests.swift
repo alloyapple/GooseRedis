@@ -18,7 +18,7 @@ final class GooseRedisTests: XCTestCase {
             let redis = try Redis(host: "localhost", port: 8379)
             let r = redis.set(name: "goose", value: 30)
             let v = redis.get(name: "goose", default: 20)
-            print("\(v)")
+            XCTAssertEqual(v, 30)
         } catch {
 
         }
