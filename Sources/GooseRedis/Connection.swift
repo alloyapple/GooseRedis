@@ -51,6 +51,7 @@ public class Connection {
         self.pid = getpid()
         self.sock = Socket()
         try self.sock.connect(path: unixpath)
+        self.parser = Parser(socketReadSize: config.socketReadSize, sock: self.sock)
         self.db = db
         self.password = password
         self.config = config
@@ -85,7 +86,7 @@ public class Connection {
     }
 
     func readResponse() -> Bytes {
-        let raw = self.buffer.readLine()
+        return self.parser.readResponse()
 
     }
 

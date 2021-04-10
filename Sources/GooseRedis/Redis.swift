@@ -1,4 +1,5 @@
 import Goose
+import Foundation
 
 public let defaultConfig = RedisConfig()
 
@@ -82,5 +83,12 @@ extension String: RedisData {
     }
     public var len: Int {
         return self.utf8.count
+    }
+}
+
+
+extension Data {
+    var bytes: [UInt8] {
+        return [UInt8](self)
     }
 }
