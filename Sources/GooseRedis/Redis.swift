@@ -39,9 +39,14 @@ public class Redis {
         return String(decoding: ret, as: UTF8.self) 
     }
 
-    public func exists(names: [String]) -> String {
+    public func exists(names: [String]) -> Bool {
         let ret = self.executeCommand(name: "EXISTS", args: names)
-        return String(decoding: ret, as: UTF8.self) 
+        let r =  String(decoding: ret, as: UTF8.self) 
+        if r == "0" {
+            return false
+        } else {
+            return true
+        }
     }
 
     public func dump(name: String) -> String {

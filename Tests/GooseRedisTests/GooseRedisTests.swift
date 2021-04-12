@@ -19,7 +19,7 @@ final class GooseRedisTests: XCTestCase {
             let r = redis.set(name: "goose", value: 30)
             let v = redis.get(name: "goose", default: 20)
             XCTAssertEqual(v, 30)
-            let exist = redis.exists(names: ["goose", "goose1"])
+            let exist = redis.exists(names: ["goose1", "goose"])
             print("\(exist)")
         } catch {
 
