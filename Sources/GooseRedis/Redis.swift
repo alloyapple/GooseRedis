@@ -39,14 +39,11 @@ public class Redis {
         return String(decoding: ret, as: UTF8.self) 
     }
 
-    public func exists(names: [String]) -> Bool {
+    //返回存在Key的数目
+    public func exists(names: [String]) -> Int {
         let ret = self.executeCommand(name: "EXISTS", args: names)
         let r =  String(decoding: ret, as: UTF8.self) 
-        if r == "0" {
-            return false
-        } else {
-            return true
-        }
+        return Int(r) ?? 0
     }
 
     public func dump(name: String) -> String {
