@@ -40,6 +40,10 @@ public class Redis {
     }
 
     //返回存在Key的数目
+    public func exists(_ names: String...) -> Int {
+        return self.exists(names: names)
+    }
+
     public func exists(names: [String]) -> Int {
         let ret = self.executeCommand(name: "EXISTS", args: names)
         let r =  String(decoding: ret, as: UTF8.self) 
